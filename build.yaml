@@ -1,6 +1,19 @@
+---
 include:
-  - board: seeeduino_xiao_ble
+  - board: nice_nano//zmk
+    shield: totem_dongle dongle_display
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_STUDIO_LOCKING=n
+    artifact-name: totem_dongle
+  - board: xiao_ble//zmk
     shield: totem_left
-  - board: seeeduino_xiao_ble
+    artifact-name: totem_left
+  - board: xiao_ble//zmk
     shield: totem_right
-# there is no settingsreset (needed) for the XIAO
+    artifact-name: totem_right
+  - board: nice_nano//zmk
+    shield: settings_reset
+    artifact-name: settings_reset_nice_nano
+  - board: xiao_ble//zmk
+    shield: settings_reset
+    artifact-name: settings_reset_xiao
