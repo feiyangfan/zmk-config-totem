@@ -15,6 +15,7 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/outputs.h>
+#include <dt-bindings/zmk/pointing.h>
 
 #define BASE 0
 #define NAV  1
@@ -39,6 +40,179 @@
     };
 
     macros {
+        // Reusable zero-parameter mouse behaviors for ZMK Studio.
+        // Studio can assign these to any key without needing to configure
+        // the parameterized &mmv, &msc, or &mkp behaviors directly.
+
+        mouse_move_left: mouse_move_left {
+            display-name = "Mouse Move Left";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mmv MOVE_LEFT>
+                , <&macro_pause_for_release>
+                , <&macro_release &mmv MOVE_LEFT>
+                ;
+        };
+
+        mouse_move_right: mouse_move_right {
+            display-name = "Mouse Move Right";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mmv MOVE_RIGHT>
+                , <&macro_pause_for_release>
+                , <&macro_release &mmv MOVE_RIGHT>
+                ;
+        };
+
+        mouse_move_up: mouse_move_up {
+            display-name = "Mouse Move Up";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mmv MOVE_UP>
+                , <&macro_pause_for_release>
+                , <&macro_release &mmv MOVE_UP>
+                ;
+        };
+
+        mouse_move_down: mouse_move_down {
+            display-name = "Mouse Move Down";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mmv MOVE_DOWN>
+                , <&macro_pause_for_release>
+                , <&macro_release &mmv MOVE_DOWN>
+                ;
+        };
+
+        mouse_scroll_up: mouse_scroll_up {
+            display-name = "Mouse Scroll Up";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &msc SCRL_UP>
+                , <&macro_pause_for_release>
+                , <&macro_release &msc SCRL_UP>
+                ;
+        };
+
+        mouse_scroll_down: mouse_scroll_down {
+            display-name = "Mouse Scroll Down";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &msc SCRL_DOWN>
+                , <&macro_pause_for_release>
+                , <&macro_release &msc SCRL_DOWN>
+                ;
+        };
+
+        mouse_scroll_left: mouse_scroll_left {
+            display-name = "Mouse Scroll Left";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &msc SCRL_LEFT>
+                , <&macro_pause_for_release>
+                , <&macro_release &msc SCRL_LEFT>
+                ;
+        };
+
+        mouse_scroll_right: mouse_scroll_right {
+            display-name = "Mouse Scroll Right";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &msc SCRL_RIGHT>
+                , <&macro_pause_for_release>
+                , <&macro_release &msc SCRL_RIGHT>
+                ;
+        };
+
+        mouse_click_left: mouse_click_left {
+            display-name = "Mouse Left Click";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mkp LCLK>
+                , <&macro_pause_for_release>
+                , <&macro_release &mkp LCLK>
+                ;
+        };
+
+        mouse_click_right: mouse_click_right {
+            display-name = "Mouse Right Click";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mkp RCLK>
+                , <&macro_pause_for_release>
+                , <&macro_release &mkp RCLK>
+                ;
+        };
+
+        mouse_click_middle: mouse_click_middle {
+            display-name = "Mouse Middle Click";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mkp MCLK>
+                , <&macro_pause_for_release>
+                , <&macro_release &mkp MCLK>
+                ;
+        };
+
+        mouse_button_4: mouse_button_4 {
+            display-name = "Mouse Button 4";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mkp MB4>
+                , <&macro_pause_for_release>
+                , <&macro_release &mkp MB4>
+                ;
+        };
+
+        mouse_button_5: mouse_button_5 {
+            display-name = "Mouse Button 5";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&macro_press &mkp MB5>
+                , <&macro_pause_for_release>
+                , <&macro_release &mkp MB5>
+                ;
+        };
+
         gif: gif {
             label = "giphy";
             compatible = "zmk,behavior-macro";
