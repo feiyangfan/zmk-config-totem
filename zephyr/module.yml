@@ -1,0 +1,6 @@
+name: zmk-keyboard-totem
+
+build:
+  cmake: .
+  settings:
+    board_root: config
