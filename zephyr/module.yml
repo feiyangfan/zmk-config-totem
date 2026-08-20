@@ -1,6 +1,7 @@
-name: zmk-keyboard-totem
+name: zmk-overlay-companion
 
 build:
   cmake: .
+  kconfig: Kconfig
   settings:
     board_root: config

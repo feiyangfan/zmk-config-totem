@@ -1,0 +1,15 @@
+menuconfig ZMK_OVERLAY_COMPANION
+    bool "ZMK Overlay Companion"
+    default n
+    depends on ZMK_BLE
+    help
+      Exposes a small BLE GATT service for companion applications such as
+      ZMK Overlay. The service reports the active layer, physical key
+      press/release events, and protocol capabilities.
+
+      Enable this only on the ZMK device that processes the keymap and
+      connects to the host: a normal keyboard, the central half of a split,
+      or a dedicated dongle.
+
+      ZMK Studio is also required by the desktop application for dynamic
+      keymap and physical-layout discovery.
