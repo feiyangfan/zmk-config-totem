@@ -54,6 +54,7 @@
 
 #include <zephyr/bluetooth/gatt.h>
 #include <zephyr/bluetooth/uuid.h>
+#include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 
@@ -65,6 +66,11 @@
 #include <zmk/keymap.h>
 #include <zmk/keys.h>
 
+LOG_MODULE_REGISTER(
+    zmk_overlay_companion,
+    CONFIG_ZMK_OVERLAY_COMPANION_LOG_LEVEL
+);
+
 #define ZMK_OVERLAY_PROTOCOL_MAJOR 1U
 #define ZMK_OVERLAY_PROTOCOL_MINOR 1U
 
@@ -75,6 +81,19 @@
 #define ZMK_OVERLAY_CAPABILITIES                                              \
     (ZMK_OVERLAY_CAP_ACTIVE_LAYER | ZMK_OVERLAY_CAP_KEY_EVENTS |             \
      ZMK_OVERLAY_CAP_MODIFIER_STATE)
+
+/*
+ * Value-attribute indexes inside zmk_overlay_companion_service.
+ *
+ * BT_GATT_CHARACTERISTIC expands to a declaration attribute followed by
+ * the characteristic value attribute. Keeping the indexes named here makes
+ * future GATT edits easier to audit and avoids unexplained attrs[n] literals.
+ */
+enum zmk_overlay_attr_index {
+    ZMK_OVERLAY_ATTR_LAYER_VALUE = 2,
+    ZMK_OVERLAY_ATTR_KEY_EVENT_VALUE = 5,
+    ZMK_OVERLAY_ATTR_MODIFIER_STATE_VALUE = 10,
+};
 
 #define BT_UUID_ZMK_OVERLAY_SERVICE_VAL \
     BT_UUID_128_ENCODE(0x7d8c5f20, 0x7c8a, 0x4f45, 0x9c84, 0x2f6e8a7b2000)
@@ -300,6 +319,32 @@ BT_GATT_SERVICE_DEFINE(
     )
 );
 
+/*
+ * Overlay telemetry is best-effort. A notification failure must never affect
+ * normal ZMK HID processing. Debug logging is available when explicitly
+ * enabled, but production builds can keep the module log level off.
+ */
+static void notify_overlay_attr(
+    enum zmk_overlay_attr_index attr_index,
+    const void *data,
+    uint16_t len
+) {
+    int err = bt_gatt_notify(
+        NULL,
+        &zmk_overlay_companion_service.attrs[attr_index],
+        data,
+        len
+    );
+
+    if (err != 0) {
+        LOG_DBG(
+            "GATT notify failed for attr %d: %d",
+            attr_index,
+            err
+        );
+    }
+}
+
 static int overlay_layer_state_listener(
     const zmk_event_t *eh
 ) {
@@ -312,9 +357,8 @@ static int overlay_layer_state_listener(
 
     refresh_active_layer();
 
-    (void)bt_gatt_notify(
-        NULL,
-        &zmk_overlay_companion_service.attrs[2],
+    notify_overlay_attr(
+        ZMK_OVERLAY_ATTR_LAYER_VALUE,
         active_layer_payload,
         sizeof(active_layer_payload)
     );
@@ -354,9 +398,8 @@ static int overlay_key_position_listener(
     key_event_payload[2] =
         event->state ? 1U : 0U;
 
-    (void)bt_gatt_notify(
-        NULL,
-        &zmk_overlay_companion_service.attrs[5],
+    notify_overlay_attr(
+        ZMK_OVERLAY_ATTR_KEY_EVENT_VALUE,
         key_event_payload,
         sizeof(key_event_payload)
     );
@@ -432,9 +475,8 @@ static int overlay_modifier_state_listener(
     modifier_state_payload[2] =
         event->state ? 1U : 0U;
 
-    (void)bt_gatt_notify(
-        NULL,
-        &zmk_overlay_companion_service.attrs[10],
+    notify_overlay_attr(
+        ZMK_OVERLAY_ATTR_MODIFIER_STATE_VALUE,
         modifier_state_payload,
         sizeof(modifier_state_payload)
     );
