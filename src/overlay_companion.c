@@ -150,11 +150,21 @@ static const uint8_t protocol_info_payload[4] = {
 };
 
 static void refresh_active_layer(void) {
-    uint16_t layer =
-        (uint16_t)zmk_keymap_highest_layer_active();
+    zmk_keymap_layer_index_t layer_index =
+        zmk_keymap_highest_layer_active();
+
+    zmk_keymap_layer_id_t layer_id =
+        zmk_keymap_layer_index_to_id(
+            layer_index
+        );
+
+    if (layer_id == ZMK_KEYMAP_LAYER_ID_INVAL) {
+        layer_id =
+            zmk_keymap_layer_default();
+    }
 
     sys_put_le16(
-        layer,
+        (uint16_t)layer_id,
         active_layer_payload
     );
 }
