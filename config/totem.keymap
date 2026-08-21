@@ -1,8 +1,12 @@
 //
-// TOTEM keymap
-// BASE / NAV / SYM preserved from current overlay dump.
-// NUM redesigned as number + function row.
-// UTL contains Bluetooth/output/system/media/mouse-scroll utilities.
+// TOTEM keymap — ergonomic test layout
+//
+// Thumb taps / holds:
+//   Left:  UTL/Esc   NAV/Space   FUN/Tab
+//   Right: SYM/Enter Backspace   NUM/Delete
+//
+// Layers:
+//   BASE 0, NAV 1, NUM 2, SYM 3, UTL 4, FUN 5
 //
 
 #include <behaviors.dtsi>
@@ -16,6 +20,7 @@
 #define NUM  2
 #define SYM  3
 #define UTL  4
+#define FUN  5
 
 &mt {
     quick-tap-ms = <100>;
@@ -83,7 +88,7 @@
     };
 
     macros {
-        // Reusable zero-parameter mouse behaviors for ZMK Studio.
+        // Zero-parameter mouse behaviors remain Studio-friendly.
         mouse_move_left: mouse_move_left {
             display-name = "Mouse Move Left";
             compatible = "zmk,behavior-macro";
@@ -266,89 +271,99 @@
         };
     };
 
-    // NAV + SYM -> UTL.
-    // This uses the existing NAV-layer &mo SYM thumb key, so BASE/NAV/SYM
-    // do not need to be changed merely to reach UTL.
-    conditional_layers {
-        compatible = "zmk,conditional-layers";
-
-        nav_sym_utl {
-            if-layers = <NAV SYM>;
-            then-layer = <UTL>;
-        };
-    };
-
     keymap {
         compatible = "zmk,keymap";
 
         base_layer {
-            label = "Base";
+            label = "BASE";
 
             //                 Q            W            E            R            T             Y            U            I            O            P
             //                 A/GUI        S/ALT        D/SHIFT      F/CTRL       G             H            J/RCTRL      K/RSHIFT     L/RALT       ;/RGUI
             // TAB             Z            X            C            V            B             N            M            ,            .            /            CAPS
-            //                                           NUM/Esc      NAV/Space    NAV/Esc       Base/Enter   SYM/Bspc     RShift
+            //                                           UTL/Esc      NAV/Space    FUN/Tab       SYM/Enter    Backspace    NUM/Delete
             bindings = <
                                 &kp Q        &kp W        &kp E        &kp R        &kp T          &kp Y        &kp U        &kp I        &kp O        &kp P
                                 &hml LGUI A  &hml LALT S  &hml LSHFT D &hml LCTRL F &kp G         &kp H        &hmr RCTRL J &hmr RSHFT K &hmr RALT L  &hmr RGUI SEMI
                 &kp TAB        &kp Z        &kp X        &kp C        &kp V        &kp B          &kp N        &kp M        &kp COMMA    &kp DOT      &kp FSLH     &kp CAPS
-                                                            &lt NUM ESC  &lt NAV SPACE &lt NAV ESC  &lt BASE ENTER &lt SYM BSPC &kp RSHFT
+                                                            &lt UTL ESC  &lt NAV SPACE &lt FUN TAB   &lt SYM ENTER &kp BSPC     &lt NUM DEL
             >;
         };
 
         nav_layer {
             label = "NAV";
 
-            //                 ESC          .            .            .            .             M←           M↓           M↑           M→           RClick
-            //                 GUI          ALT          SHIFT        CTRL         .             ←            ↓            ↑            →            .
-            // TAB(trans)      .            .            .            .            .             HOME         PGDN         PGUP         END          .            CAPS(trans)
-            //                                           .            trans        .             SYM          LClick       trans
+            // Left top: editing shortcuts. Right top: mouse movement + right click.
+            // Left home: modifiers.        Right home: HJKL-style arrows + middle click.
+            // Left bottom: wheel scroll.   Right bottom: Home/PgDn/PgUp/End + left click.
+            // Right thumbs: Enter / Backspace / Delete.
             bindings = <
-                                &kp ESC      &none        &none        &none        &none          &mouse_move_left &mouse_move_down &mouse_move_up &mouse_move_right &mouse_click_right
-                                &kp LGUI     &kp LALT     &kp LSHFT   &kp LCTRL    &none          &kp LEFT     &kp DOWN     &kp UP       &kp RIGHT    &none
-                &trans          &none        &none        &none        &none        &none          &kp HOME     &kp PG_DN    &kp PG_UP    &kp END      &none         &trans
-                                                            &none        &trans       &none          &mo SYM      &mouse_click_left &trans
+                                &kp LC(Y)            &kp LC(V)            &kp LC(C)            &kp LC(X)             &kp LC(Z)               &mouse_move_left   &mouse_move_down   &mouse_move_up     &mouse_move_right   &mouse_click_right
+                                &kp LGUI             &kp LALT             &kp LSHFT             &kp LCTRL              &none                   &kp LEFT           &kp DOWN            &kp UP              &kp RIGHT           &mouse_click_middle
+                &none           &mouse_scroll_left   &mouse_scroll_down   &mouse_scroll_up      &mouse_scroll_right    &none                   &kp HOME           &kp PG_DN           &kp PG_UP           &kp END             &mouse_click_left   &none
+                                                                        &trans                 &trans                 &trans                   &kp ENTER          &kp BSPC            &kp DEL
             >;
         };
 
         num_layer {
             label = "NUM";
 
-            //                 F1           F2           F3           F4           F5            F6           F7           F8           F9           F10
-            //                 1            2            3            4            5             6            7            8            9            0
-            // F11             (            )            %            =            +             -            *            /            .            ,            F12
-            //                                           trans        trans        trans          trans        trans        trans
+            // Right thumb holds NUM; left hand becomes a numpad / numeric-expression pad.
+            //                 +            7            8            9            /             .            .            .            .            .
+            //                 =            4            5            6            *             .            .            .            .            .
+            // .               (            )            1            2            3             .            .            .            .            .            .
+            //                                           Enter        0            .             trans        trans        trans
             bindings = <
-                                &kp F1       &kp F2       &kp F3       &kp F4       &kp F5         &kp F6       &kp F7       &kp F8       &kp F9       &kp F10
-                                &kp N1       &kp N2       &kp N3       &kp N4       &kp N5         &kp N6       &kp N7       &kp N8       &kp N9       &kp N0
-                &kp F11        &kp LPAR     &kp RPAR     &kp PRCNT    &kp EQUAL    &kp PLUS       &kp MINUS    &kp ASTRK    &kp FSLH     &kp DOT      &kp COMMA    &kp F12
-                                                            &trans       &trans       &trans          &trans       &trans       &trans
+                                &kp PLUS     &kp N7       &kp N8       &kp N9       &kp FSLH       &none        &none        &none        &none        &none
+                                &kp EQUAL    &kp N4       &kp N5       &kp N6       &kp ASTRK      &none        &none        &none        &none        &none
+                &none           &kp LPAR     &kp RPAR     &kp N1       &kp N2       &kp N3         &none        &none        &none        &none        &none        &none
+                                                            &kp ENTER    &kp N0       &kp DOT        &trans       &trans       &trans
             >;
         };
 
         sym_layer {
             label = "SYM";
 
-            // Preserve current Studio/overlay bindings exactly by HID intent.
+            // Grouped by symbol family; thumbs intentionally transparent for testing.
+            //                 [            ]            {            }            `             @            #            $            ^            ~
+            //                 (            )            <            >            =             '            "            ?            ;            :
+            // .               !            &            |            \\           _             +            -            *            /            %            .
             bindings = <
-                                &none            &none            &kp LS(LBKT)     &kp LS(RBKT)     &kp KP_PLUS      &kp LS(GRAVE)    &kp RS(GRAVE)    &kp LS(N4)       &kp LS(N6)       &none
-                                &kp LS(COMMA)    &kp LS(DOT)      &kp LS(N9)       &kp LS(N0)       &kp KP_MINUS     &kp EQUAL        &kp SQT          &kp LS(N2)       &kp LS(N5)       &none
-                &none           &none            &none            &kp LBKT         &kp RBKT         &kp LS(N8)       &kp RS(MINUS)    &kp RS(SQT)      &kp BSLH         &kp LS(BSLH)     &none           &none
-                                                                        &trans            &trans            &trans            &trans            &trans            &trans
+                                &kp LBKT     &kp RBKT     &kp LBRC     &kp RBRC     &kp GRAVE      &kp AT       &kp HASH     &kp DLLR     &kp CARET    &kp TILDE
+                                &kp LPAR     &kp RPAR     &kp LT       &kp GT       &kp EQUAL      &kp SQT      &kp DQT      &kp QMARK    &kp SEMI     &kp COLON
+                &none           &kp EXCL     &kp AMPS     &kp PIPE     &kp BSLH      &kp UNDER      &kp PLUS     &kp MINUS    &kp ASTRK    &kp FSLH     &kp PRCNT    &none
+                                                            &trans       &trans       &trans          &trans       &trans       &trans
             >;
         };
 
         utility_layer {
             label = "UTL";
 
-            // Bluetooth profiles 1-5                 | output + system
-            // BT prev/next/clear                     | media controls
-            // Fewer-used editing keys                | mouse scrolling + play/pause
+            // Reset/bootloader are deliberately placed on both physical halves.
+            // Right hand also carries BT, media, and output controls.
+            //                 Reset-L      Boot-L       .            .            .             BT1          BT2          .            Reset-R      Boot-R
+            //                 .            .            .            .            .             Prev         Vol-         Mute         Vol+         Next
+            // .               .            .            .            .            .             BT Prev      BT Next      BT Clear     USB          BLE          Toggle
             bindings = <
-                                &bt BT_SEL 0   &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3   &bt BT_SEL 4      &out OUT_USB       &out OUT_BLE       &out OUT_TOG       &sys_reset          &bootloader
-                                &bt BT_PRV     &bt BT_NXT     &bt BT_CLR     &none           &none              &kp C_PREV         &kp C_VOL_DN       &kp C_MUTE         &kp C_VOL_UP        &kp C_NEXT
-                &none           &kp INS        &kp DEL        &kp PSCRN      &none           &none              &mouse_scroll_left &mouse_scroll_down &mouse_scroll_up   &mouse_scroll_right &kp C_PP            &none
-                                                                        &trans            &trans            &trans            &trans            &trans            &trans
+                                &sys_reset   &bootloader  &none        &none        &none          &bt BT_SEL 0 &bt BT_SEL 1 &none        &sys_reset   &bootloader
+                                &none        &none        &none        &none        &none          &kp C_PREV   &kp C_VOL_DN &kp C_MUTE   &kp C_VOL_UP &kp C_NEXT
+                &none           &none        &none        &none        &none        &none          &bt BT_PRV   &bt BT_NXT   &bt BT_CLR   &out OUT_USB &out OUT_BLE &out OUT_TOG
+                                                            &trans       &trans       &trans          &trans       &trans       &trans
+            >;
+        };
+
+        fun_layer {
+            label = "FUN";
+
+            // Left thumb holds FUN; F-keys are concentrated on the right hand.
+            // Miryoku-inspired 3x3 F1-F9 pattern, with F10-F12 in the outer column.
+            //                 .            .            .            .            .             PrtSc        F7           F8           F9           F12
+            //                 .            .            .            .            .             ScrLk        F4           F5           F6           F11
+            // .               .            .            .            .            .             Pause        F1           F2           F3           F10          .
+            bindings = <
+                                &none        &none        &none        &none        &none          &kp PSCRN    &kp F7       &kp F8       &kp F9       &kp F12
+                                &none        &none        &none        &none        &none          &kp SLCK     &kp F4       &kp F5       &kp F6       &kp F11
+                &none           &none        &none        &none        &none        &none          &kp PAUSE_BREAK &kp F1    &kp F2       &kp F3       &kp F10      &none
+                                                            &trans       &trans       &trans          &trans       &trans       &trans
             >;
         };
     };
